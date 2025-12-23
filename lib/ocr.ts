@@ -15,19 +15,19 @@ export async function extractRemitoData(imagePath: string): Promise<RemitoData> 
 
         const text = result.data.text;
 
-        // Basic heuristic extraction
-        const dateRegex = /\d{1,2}\/\d{1,2}\/\d{2,4}/;
-        const amountRegex = /\$\s?[\d,.]+/;
-        const remitoRegex = /Remito\sN[°o]\s?(\d+-\d+)/i;
+        // Improved Heuristic extraction
+        const dateRegex = /(\d{1,2}[/-]\d{1,2}[/-]\d{2,4})/;
+        const amountRegex = /(?:[\$]|Total|Monto)[:\s]*([\d,.]+)/i;
+        const remitoRegex = /(?:Remito|N[°o]|Nro)[:\s]*(\d+[-\s]*\d+)/i;
 
         const dateMatch = text.match(dateRegex);
         const amountMatch = text.match(amountRegex);
         const remitoMatch = text.match(remitoRegex);
 
         return {
-            remitoNumber: remitoMatch ? remitoMatch[1] : '',
-            date: dateMatch ? dateMatch[0] : '',
-            amount: amountMatch ? amountMatch[0] : '',
+            remitoNumber: remitoMatch ? remitoMatch[1].replace(/\s/g, '') : '',
+            date: dateMatch ? dateMatch[1] : '',
+            amount: amountMatch ? amountMatch[1] : '',
             rawText: text
         };
     } catch (error) {

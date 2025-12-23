@@ -24,7 +24,13 @@ export default function LoginPage() {
             });
 
             if (error) {
-                alert('Error: ' + error.message);
+                if (error.message.includes('Email not confirmed')) {
+                    alert('Error: Tu email no ha sido confirmado. Por favor revisa tu correo y haz clic en el enlace de confirmación.');
+                } else if (error.message.includes('Invalid login credentials')) {
+                    alert('Error: Credenciales inválidas. Verifica tu email y contraseña.');
+                } else {
+                    alert('Error: ' + error.message);
+                }
             } else {
                 router.push('/chofer');
             }
@@ -39,9 +45,9 @@ export default function LoginPage() {
         <AuroraBackground>
             <div className="relative z-10 w-full max-w-md p-8 md:p-10 bg-black/40 border border-white/10 backdrop-blur-xl rounded-3xl shadow-2xl">
                 <div className="flex flex-col items-center mb-8 space-y-4">
-                    <div className="relative w-20 h-20 drop-shadow-[0_0_15px_rgba(59,130,246,0.5)]">
+                    <div className="relative w-28 h-28 drop-shadow-[0_0_15px_rgba(59,130,246,0.3)]">
                         <Image
-                            src="/driver_icon.png"
+                            src="/logo.png"
                             alt="Logo"
                             fill
                             className="object-contain"
@@ -89,6 +95,14 @@ export default function LoginPage() {
                         {loading ? <Loader2 className="animate-spin" /> : 'Ingresar'}
                     </Button>
                 </form>
+                <div className="mt-6 text-center">
+                    <p className="text-sm text-white/40">
+                        ¿No tienes cuenta?{' '}
+                        <a href="/register" className="text-blue-400 hover:text-blue-300 font-semibold transition-colors">
+                            Crear Cuenta
+                        </a>
+                    </p>
+                </div>
             </div>
         </AuroraBackground>
     );
