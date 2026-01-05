@@ -87,6 +87,11 @@ export default function ChoferPage() {
         }
     };
 
+    const extractSheetId = (input: string): string => {
+        const match = input.match(/\/d\/([a-zA-Z0-9-_]+)/);
+        return match ? match[1] : input.trim();
+    };
+
     const handleProcessImage = async () => {
         if (!image) return;
         setProcessing(true);
@@ -129,7 +134,8 @@ export default function ChoferPage() {
             // 2. Compress Image to WebP
             const blob = await compressImage(image);
             const fileName = `remito_${Date.now()}.webp`;
-            const filePath = `${sheetId}/${fileName}`;
+            const cleanSheetId = extractSheetId(sheetId);
+            const filePath = `${cleanSheetId}/${fileName}`;
 
             // 2. Upload to Supabase Storage (Bucket 'remitos' must exist)
             const { data: uploadData, error: uploadError } = await supabase.storage

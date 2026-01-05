@@ -1,7 +1,13 @@
 import { google } from 'googleapis';
 
+function extractSheetId(input: string): string {
+    // If it looks like a URL, extract the part between /d/ and /
+    const match = input.match(/\/d\/([a-zA-Z0-9-_]+)/);
+    return match ? match[1] : input.trim();
+}
+
 export async function appendRemitoToSheet(
-    spreadsheetId: string,
+    rawSpreadsheetId: string,
     data: {
         remitoNumber: string;
         date: string;
@@ -22,6 +28,7 @@ export async function appendRemitoToSheet(
         });
 
         const sheets = google.sheets({ version: 'v4', auth });
+        const spreadsheetId = extractSheetId(rawSpreadsheetId);
 
         console.log('Attempting to append to Sheet:', { spreadsheetId, range: 'Hoja 1!A:E' });
         const response = await sheets.spreadsheets.values.append({
@@ -36,14 +43,21 @@ export async function appendRemitoToSheet(
         });
         console.log('Google Sheets Sync Response:', response.status, response.statusText);
         return response.data;
-    } catch (error) {
+    } catch (error: any) {
         console.error('Error adding to sheet:', error);
+        if (error.code === 404) {
+            throw new Error('No se encontró la planilla o la pestaña "Hoja 1". Verifica que la pestaña se llame exactamente "Hoja 1" y que el ID sea correcto.');
+        }
+        if (error.code === 403) {
+            throw new Error('Permiso denegado: Asegúrate de que el email de la Service Account tenga permisos de Editor en la planilla.');
+        }
         throw error;
     }
 }
 
-export async function getDriverStats(spreadsheetId: string) {
+export async function getDriverStats(rawSpreadsheetId: string) {
     try {
+        const spreadsheetId = extractSheetId(rawSpreadsheetId);
         const auth = new google.auth.GoogleAuth({
             credentials: {
                 client_email: process.env.GOOGLE_SHEETS_CLIENT_EMAIL,

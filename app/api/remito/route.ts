@@ -24,11 +24,14 @@ export async function POST(request: Request) {
             );
         }
 
+        const now = new Date();
+        const timestamp = now.toLocaleDateString('es-AR') + ' ' + now.toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' });
+
         await appendRemitoToSheet(sheetId, {
             remitoNumber,
             date,
             destination,
-            timestamp: new Date().toISOString(),
+            timestamp,
             imageUrl,
         });
 

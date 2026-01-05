@@ -30,9 +30,15 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-
+.next/
+.env.local
+node-v*
 # vercel
 .vercel
 
 # typescript
 *.tsbuildinfo
+
+.env
+.env.*
+!.env.example
